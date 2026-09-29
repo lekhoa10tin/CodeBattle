@@ -19,17 +19,19 @@ int binarySearch(int arr[], int n, int target) {
 }`,
         verifySolution: (code) => code.includes("while") && (code.includes("right") || code.includes("left")) && code.includes("mid"),
         onSuccess: () => {
-            // Sửa cầu
-            bridgeGraphic.clear();
-            bridgeGraphic.fillStyle(0x38bdf8, 1);
-            bridgeGraphic.fillRect(350, 280, 100, 40);
+            // Mở đường Cửa 1
             window.bridgeRepaired = true;
+            if (bridgeGraphic) {
+                bridgeGraphic.clear();
+                bridgeGraphic.fillStyle(0x38bdf8, 1); // Cầu sáng xanh
+                bridgeGraphic.fillRect(300, 280, 150, 40);
+            }
         }
     },
     {
         id: "gateQuest",
         title: "Cửa 2: Cánh Cổng Ma Thuật (Dynamic Programming)",
-        desc: "Cánh cổng thần kỳ khóa kín! Hãy viết hàm <code>long long getEnergy(int n)</code> tính số Fibonacci thứ n bằng **Quy hoạch động** để giải mã cổng.",
+        desc: "Cánh cổng thần kỳ đang khóa! Hãy viết hàm <code>long long getEnergy(int n)</code> tính số Fibonacci thứ n bằng **Quy hoạch động** để mở cổng.",
         defaultCode: `#include <iostream>
 using namespace std;
 
@@ -45,13 +47,15 @@ long long getEnergy(int n) {
     }
     return current;
 }`,
-        verifySolution: (code) => code.includes("for") && (code.includes("dp") || code.includes("prev") || code.includes("+")),
+        verifySolution: (code) => code.includes("for") && (code.includes("prev") || code.includes("dp") || code.includes("+")),
         onSuccess: () => {
-            // Mở cổng thần kỳ
-            gateGraphic.clear();
-            gateGraphic.fillStyle(0x10b981, 1); // Cổng đổi sang màu xanh lá báo hiệu mở
-            gateGraphic.fillRect(650, 250, 30, 100);
+            // Mở cổng Cửa 2
             window.gateOpened = true;
+            if (gateGraphic) {
+                gateGraphic.clear();
+                gateGraphic.fillStyle(0x10b981, 1); // Cổng xanh lá
+                gateGraphic.fillRect(650, 250, 30, 100);
+            }
         }
     }
 ];
@@ -62,10 +66,14 @@ let game;
 let player;
 let bridgeGraphic;
 let gateGraphic;
-let questZone1Triggered = false;
-let questZone2Triggered = false;
+let quest1Triggered = false;
+let quest2Triggered = false;
 
-// --- 2. KHỞI TẠO MONACO EDITOR ---
+// Khởi tạo trạng thái ban đầu
+window.bridgeRepaired = false;
+window.gateOpened = false;
+
+// --- 2. MONACO EDITOR ---
 require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs' } });
 require(['vs/editor/editor.main'], function () {
     editor = monaco.editor.create(document.getElementById('monaco-container'), {
@@ -77,7 +85,7 @@ require(['vs/editor/editor.main'], function () {
     });
 });
 
-// --- 3. KHỞI TẠO PHASER GAME ---
+// --- 3. PHASER GAME ---
 const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
@@ -97,48 +105,48 @@ function preload() {
 }
 
 function create() {
-    // Vẽ Vực Thẫm (Cửa 1)
+    // Vẽ Vực Thẫm
     let chasm = this.add.graphics();
     chasm.fillStyle(0x0f172a, 1);
-    chasm.fillRect(350, 0, 100, window.innerHeight);
+    chasm.fillRect(300, 0, 150, window.innerHeight);
 
-    // Vẽ Cầu (Cửa 1)
+    // Vẽ Cầu
     bridgeGraphic = this.add.graphics();
     bridgeGraphic.fillStyle(0x38bdf8, 0.3);
-    bridgeGraphic.fillRect(350, 280, 100, 40);
+    bridgeGraphic.fillRect(300, 280, 150, 40);
 
     // Vẽ Cánh Cổng (Cửa 2)
     gateGraphic = this.add.graphics();
-    gateGraphic.fillStyle(0xef4444, 1); // Cổng đỏ đang khóa
+    gateGraphic.fillStyle(0xef4444, 1);
     gateGraphic.fillRect(650, 250, 30, 100);
 
     // Tạo Nhân vật
-    player = this.physics.add.sprite(100, 300, 'player');
+    player = this.physics.add.sprite(80, 300, 'player');
     player.setCollideWorldBounds(true);
 
-    // Trigger Cửa 1 (Cầu gãy)
-    let zone1 = this.add.zone(320, 300, 50, 100);
+    // Vùng Kích Hoạt Cửa 1
+    let zone1 = this.add.zone(260, 300, 40, 100);
     this.physics.world.enable(zone1);
     zone1.body.setAllowGravity(false);
     zone1.body.moves = false;
 
     this.physics.add.overlap(player, zone1, () => {
-        if (!questZone1Triggered) {
-            questZone1Triggered = true;
+        if (!quest1Triggered) {
+            quest1Triggered = true;
             loadQuest(0);
         }
     });
 
-    // Trigger Cửa 2 (Cánh cổng)
-    let zone2 = this.add.zone(620, 300, 50, 100);
+    // Vùng Kích Hoạt Cửa 2
+    let zone2 = this.add.zone(600, 300, 40, 100);
     this.physics.world.enable(zone2);
     zone2.body.setAllowGravity(false);
     zone2.body.moves = false;
 
     this.physics.add.overlap(player, zone2, () => {
-        if (!questZone2Triggered && window.bridgeRepaired) {
-            questZone2Triggered = true;
-            loadQuest(1); // Chuyển sang Cửa 2
+        if (!quest2Triggered && window.bridgeRepaired) {
+            quest2Triggered = true;
+            loadQuest(1);
         }
     });
 
@@ -150,25 +158,25 @@ function update() {
     player.setVelocity(0);
 
     if (this.cursors.left.isDown) {
-        player.setVelocityX(-160);
+        player.setVelocityX(-180);
     } else if (this.cursors.right.isDown) {
-        // Chặn lại nếu chưa sửa cầu
-        if (player.x > 310 && player.x < 450 && !window.bridgeRepaired) {
+        // Chặn Cửa 1 nếu chưa sửa xong cầu
+        if (player.x > 270 && player.x < 450 && !window.bridgeRepaired) {
             player.setVelocityX(0);
         } 
-        // Chặn lại nếu chưa mở cổng cửa 2
+        // Chặn Cửa 2 nếu chưa mở xong cổng
         else if (player.x > 610 && !window.gateOpened) {
             player.setVelocityX(0);
         } else {
-            player.setVelocityX(160);
+            player.setVelocityX(180);
         }
     }
 
-    if (this.cursors.up.isDown) player.setVelocityY(-160);
-    else if (this.cursors.down.isDown) player.setVelocityY(160);
+    if (this.cursors.up.isDown) player.setVelocityY(-180);
+    else if (this.cursors.down.isDown) player.setVelocityY(180);
 }
 
-// --- 4. HÀM CHUYỂN BÀI / CỬA ---
+// --- 4. HÀM CHUYỂN BÀI ---
 function loadQuest(index) {
     currentQuestIndex = index;
     const q = QUESTS[index];
@@ -177,27 +185,27 @@ function loadQuest(index) {
     if (editor) {
         editor.setValue(q.defaultCode);
     }
-    logConsole(`⚠ Bạn đã kích hoạt ${q.title}. Hãy viết code và bấm Nộp Bài!`);
+    logConsole(`⚠ Kích hoạt: ${q.title}. Hãy nộp bài để mở đường!`);
 }
 
-// --- 5. LOGIC NỘP BÀI ---
+// --- 5. HÀM NỘP BÀI ---
 function submitCode() {
     const currentQuest = QUESTS[currentQuestIndex];
     const userCode = editor.getValue();
     const consoleEl = document.getElementById("console-output");
 
-    consoleEl.innerHTML = "> Đang chấm bài (Compiling C++)...";
+    consoleEl.innerHTML = "> Đang kiểm tra code C++...";
 
     setTimeout(() => {
         const isPassed = currentQuest.verifySolution(userCode);
 
         if (isPassed) {
-            consoleEl.innerHTML = `<span style="color:#34d399">> PASSED! Testcase: SUCCESS (0.01s)<br>> Hoàn thành ${currentQuest.title}! Hãy tiếp tục di chuyển.</span>`;
             currentQuest.onSuccess();
+            consoleEl.innerHTML = `<span style="color:#34d399">> PASSED! Thành công!<br>> Cầu/Cổng đã được mở. Nhấn phím MŨI TÊN PHẢI (➡️) để đi tiếp!</span>`;
         } else {
-            consoleEl.innerHTML = `<span style="color:#f87171">> WRONG ANSWER / COMPILE ERROR<br>> Thuật toán chưa đúng hoặc thiếu logic.</span>`;
+            consoleEl.innerHTML = `<span style="color:#f87171">> WRONG ANSWER!<br>> Thuật toán chưa chính xác. Hãy kiểm tra lại code.</span>`;
         }
-    }, 800);
+    }, 500);
 }
 
 function logConsole(msg) {
