@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Odyssey - Algorithm RPG</title>
+    <!-- Phaser.js cho Game 2D -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <!-- Monaco Editor (VS Code Editor) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #fff; overflow: hidden; }
+        
+        #app-container { display: flex; width: 100vw; height: 100vh; }
+        #game-container { flex: 1; height: 100%; position: relative; }
+        
+        /* Panel Code Editor */
+        #editor-panel {
+            width: 450px;
+            height: 100%;
+            background: #1e1e2e;
+            border-left: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        
+        .panel-header { padding: 15px; background: #181825; border-bottom: 1px solid #334155; }
+        .panel-header h2 { font-size: 1.1rem; color: #38bdf8; }
+        .problem-desc { padding: 15px; background: #111827; font-size: 0.9rem; line-height: 1.4; border-bottom: 1px solid #334155; }
+        
+        #monaco-container { flex: 1; width: 100%; }
+        
+        .panel-footer { padding: 15px; background: #181825; display: flex; justify-content: space-between; align-items: center; }
+        .btn-submit {
+            background: #10b981; color: white; border: none; padding: 10px 20px;
+            font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-submit:hover { background: #059669; }
+        
+        #console-output {
+            height: 100px; background: #090d16; padding: 10px; font-family: monospace;
+            font-size: 0.85rem; color: #a7f3d0; overflow-y: auto; border-top: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Game Canvas -->
+    <div id="game-container"></div>
+
+    <!-- Panel Soạn Thảo Code -->
+    <div id="editor-panel">
+        <div class="panel-header">
+            <h2 id="quest-title">Cửa 1: Khôi Phục Cầu Nối (Binary Search)</h2>
+        </div>
+        <div class="problem-desc" id="quest-desc">
+            Bạn gặp một chiếc cầu bị gãy. Để kích hoạt năng lượng nối cầu, hãy viết hàm <code>binarySearch(int arr[], int n, int target)</code> trả về chỉ số của <code>target</code> trong mảng đã sắp xếp. Trả về <code>-1</code> nếu không tìm thấy.
+        </div>
+        <div id="monaco-container"></div>
+        <div id="console-output">> Chờ nộp bài...</div>
+        <div class="panel-footer">
+            <span style="font-size: 0.8rem; color: #94a3b8;">Language: C++</span>
+            <button class="btn-submit" onclick="submitCode()">Biên Dịch & Nộp Bài</button>
+        </div>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
